@@ -1,0 +1,55 @@
+.reservation-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+/* src/components/Reservation/Reservation.css */
+.reservation-form {
+  padding: 20px;
+  text-align: center;
+}
+
+.services-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.service-card {
+  width: 200px;
+  cursor: pointer;
+  border: 2px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+.service-card:hover {
+  border-color: #1976d2; /* Highlight on hover */
+}
+
+.service-card .MuiCardContent-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.service-card .MuiCheckbox-root {
+  margin-top: 10px;
+}
+
+
+@media (max-width: 600px) {
+  .reservation-container {
+    padding: 10px;
+  }
+
+  .MuiButton-root {
+    font-size: 14px;
+  }
+
+  .MuiTypography-h4 {
+    font-size: 24px;
+  }
+}
+  

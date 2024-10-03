@@ -1,0 +1,13 @@
+.policy-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+    /* background-color: #f9f9f9; Light gray background */
+  }
+  
+  .policy-text {
+    max-width: 800px;
+    text-align: center;
+  }
+  

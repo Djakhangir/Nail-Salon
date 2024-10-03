@@ -1,0 +1,45 @@
+.services-section {
+  text-align: center;
+  padding: 50px;
+  margin-bottom: 50px;
+  max-width: 1200px; /* Maximum width of the carousel */
+  margin: 0 auto;
+}
+
+.service-card {
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+}
+
+.book-button {
+  margin-top: 20px;
+}
+
+/* Custom padding between carousel items */
+.carousel-item-padding {
+  padding: 0 5px; /* Reducing the space between cards */
+}
+
+/* Hide arrows initially */
+.services-section .react-multi-carousel-arrow {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Show arrows on hover */
+.services-section:hover .react-multi-carousel-arrow {
+  opacity: 1;
+}
+
+@media (max-width: 1024px) {
+  .services-section {
+    max-width: 800px;
+  }
+}
+
+@media (max-width: 768px) {
+  .services-section {
+    max-width: 600px;
+  }
+}

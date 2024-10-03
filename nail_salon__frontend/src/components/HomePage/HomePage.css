@@ -1,0 +1,40 @@
+.home-banner {
+  text-align: center;
+  padding: 100px 20px; /* Padding to move the content away from the top */
+  background-image: url('');
+  background-size: cover;
+  background-position: center;
+  color: #b7b2ac;
+}
+
+.banner-header {
+  margin-bottom: 10px;
+}
+
+.banner-subheader {
+  margin-bottom: 20px;
+}
+
+.banner-button {
+  margin-top: 20px;
+}
+
+.about-us-section, .services-section, .gallery-section {
+  padding: 60px 20px; /* Add padding to move the sections down */
+  text-align: center;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.book-now-button {
+  margin-top: 20px;
+}
+
+/* Ensure footer stays at the bottom */
+footer {
+  margin-top: auto;
+}
+
+

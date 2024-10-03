@@ -1,0 +1,14 @@
+.faq-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+    background-color: #fff; /* White background */
+  }
+  
+  .faq-item {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 20px;
+  }
+  

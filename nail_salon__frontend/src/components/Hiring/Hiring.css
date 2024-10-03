@@ -1,0 +1,17 @@
+.join-our-team-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+    background-color: #f9f9f9;
+  }
+  
+  .join-our-team-text {
+    max-width: 800px;
+    text-align: center;
+  }
+  
+  .join-our-team-button {
+    margin-top: 30px;
+  }
+  

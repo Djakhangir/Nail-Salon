@@ -1,0 +1,22 @@
+.class-details-container {
+    display: flex;
+    justify-content: center;
+    padding: 50px;
+    background-color: #f9f9f9;
+  }
+  
+  .class-details-card {
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .class-details-card img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .class-details-content {
+    padding: 20px;
+  }
+  

@@ -1,0 +1,22 @@
+.banner-container {
+    height: 100vh;
+    background-image: url('path_to_your_high_res_image.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .banner-text {
+    font-family: 'Trendy Font', sans-serif;
+    color: white;
+    margin-bottom: 20px;
+  }
+  
+  .banner-button {
+    background-color: #ff4081;
+  }
+  
