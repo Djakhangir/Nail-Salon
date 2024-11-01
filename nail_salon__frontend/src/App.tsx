@@ -12,6 +12,7 @@ import FAQ from "./components/FAQ/Faq";
 import { Policy } from "@mui/icons-material";
 import Hiring from "./components/Hiring/Hiring";
 import ClassDetails from "./components/ClassDetails/ClassDetails";
+import Payments from "./components/Payments/Payments";
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
         <Route path="/faq" element={<FAQ />} />
         <Route path="/policy" element={<Policy />} />
         <Route path="/join-our-team" element={<Hiring />} />
+        <Route path="/payments" element={<Payments />} />
       </Routes>
     </Router>
   );

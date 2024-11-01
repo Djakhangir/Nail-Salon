@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -10,8 +10,9 @@ import {
 } from "@mui/material";
 import Services from "../Services/Services";
 import queryString from "query-string";
+import axios from "axios";
 // import queryString from "query-string";
-import { payments } from "@square/web-sdk";
+// import { payments } from "@square/web-sdk";
 
 //MOCK DATA
 const servicesPricing: any = {
@@ -23,10 +24,15 @@ const servicesPricing: any = {
 };
 
 const Reservation: React.FC = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [total, setTotal] = useState<number>(0);
-  const [card, setCard] = useState<any | null>(null);
+  const [customer, setCustomer] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+  });
 
   useEffect(() => {
     const queryParams = queryString.parse(location.search);
@@ -39,6 +45,16 @@ const Reservation: React.FC = () => {
       );
       setTotal(totalPrice);
     }
+
+    //GET THE NAME OF THE CUSTOMER FROM DB
+    // axios.get(`/api/customer/${"customerId"}`).then((response) => {
+    //   const { givenName, familyName, phoneNumber } = response.data;
+    //   setCustomer({
+    //     firstName: givenName,
+    //     lastName: familyName,
+    //     phone: phoneNumber || "",
+    //   });
+    // });
   }, [location.search]);
 
   const handleServiceSelect = (service: string) => {
@@ -63,47 +79,20 @@ const Reservation: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const initializeSquarePayment = async () => {
-      try {
-        const paymentsInstance = await payments(
-          "sandbox-sq0idb-_5uTSC74rVgtQOBLeUBunQ",
-          "sandbox"
-        );
-        if (!paymentsInstance) {
-          console.error("Square payments instance could not be initialized.");
-          alert("Payment system unavailable. Please try again later.");
-          return;
-        }
-        const cardInstance = await paymentsInstance.card();
-        await cardInstance.attach("#card-container");
-        setCard(cardInstance);
-      } catch (error) {
-        console.error("Error initializing Square payment form:", error);
-      }
-    };
-    initializeSquarePayment();
-  }, []);
-
-  const handlePayment = async () => {
-    if (card) {
-      const result = await card.tokenize();
-      if (result.status === "OK") {
-        alert("Payment successful!");
-        // Handle token processing with the backend here
-        console.log("Token:", result.token); // Use this token in your backend to process the payment
-      } else {
-        alert("Payment failed: " + result.errors[0].message);
-      }
-    }
+  const handleConfirmReservation = () => {
+    // Pass selected services and total amount to the Payments page
+    const selectedServicesQuery = selectedServices.join(",");
+    navigate(`/payments?services=${selectedServicesQuery}&total=${total}`);
   };
 
   return (
     <Box className="reservation-container">
-      <Typography variant="h3" gutterBottom>
-        Reservation Page
+     <Typography variant="h5" gutterBottom>
+        Dear {customer.firstName} {customer.lastName},
       </Typography>
-      <Typography variant="h6">Selected Services</Typography>
+      <Typography variant="body1" gutterBottom>
+        Here’s a summary of your selected services:
+      </Typography>
 
       <List>
         {selectedServices.map((service, index) => (
@@ -123,9 +112,8 @@ const Reservation: React.FC = () => {
         onServiceSelect={handleServiceSelect}
       />
 
-      <div id="card-container"></div>
-      <Button variant="contained" color="primary" onClick={handlePayment}>
-        Confirm Reservation
+      <Button variant="contained" color="primary" onClick={handleConfirmReservation}>
+        Proceed to Payment
       </Button>
     </Box>
   );
