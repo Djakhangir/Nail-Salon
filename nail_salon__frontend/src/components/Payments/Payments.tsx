@@ -1,11 +1,12 @@
 // src/components/Payments/Payments.tsx
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import { useLocation } from "react-router-dom";
 import { Box, Typography, TextField, Button } from "@mui/material";
 import queryString from "query-string";
 import { payments } from "@square/web-sdk";
 
-const Payments: React.FC = () => {
+const Payments= () => {
   const location = useLocation();
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -22,8 +23,6 @@ const Payments: React.FC = () => {
   });
 
   const [paymentStatus, setPaymentStatus] = useState<"success" | "error" | null>(null);
-
-
 
   useEffect(() => {
     // Parse the selected services and total from query params
@@ -72,25 +71,44 @@ const Payments: React.FC = () => {
 
   const handlePayment = async () => {
     if (card) {
+      try {
         const result = await card.tokenize({
-            billingContact: {
-              addressLines: [billingInfo.addressLine1, billingInfo.addressLine2],
-              city: billingInfo.city,
-              state: billingInfo.state,
-              postalCode: billingInfo.postalCode,
-              country: billingInfo.country,
-            },
+          billingContact: {
+            addressLines: [billingInfo.addressLine1, billingInfo.addressLine2],
+            city: billingInfo.city,
+            state: billingInfo.state,
+            postalCode: billingInfo.postalCode,
+            country: billingInfo.country,
+          },
+        });
+  
+        if (result.status === "OK") {
+          const response = await axios.post('/api/process-payment', {
+            sourceId: result.token,
+            amount: total * 100, // Include the total amount or any necessary data
+            reservationDetails: {
+              services: selectedServices,
+              customerName: `${name}`,
+              phone: phone,
+            },  
           });
-      if (result.status === "OK") {
-        alert("Payment successful!");
-        console.log("Token:", result.token); // Send this token to backend for processing
-        setPaymentStatus("success");
-      } else {
-        console.log(result.errors[0].message);
+  
+          if (response.data.status === "success") {
+            setPaymentStatus("success");
+          } else {
+            setPaymentStatus("error");
+          }
+        } else {
+          console.error("Tokenization failed:", result.errors[0].message);
+          setPaymentStatus("error");
+        }
+      } catch (error) {
+        console.error("Payment processing error:", error);
         setPaymentStatus("error");
       }
     }
   };
+  
 
   if (paymentStatus === "success") {
     return (
@@ -199,7 +217,7 @@ const Payments: React.FC = () => {
         onClick={handlePayment}
         sx={{ marginTop: "20px" }}
       >
-        Confirm and Pay
+        Confirm payment ${total.toFixed(2)}
       </Button>
     </Box>
   );

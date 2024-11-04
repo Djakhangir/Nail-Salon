@@ -26,42 +26,90 @@ const servicesPricing: any = {
 const Reservation: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [servicesPricing, setServicesPricing] = useState<any>({});
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [total, setTotal] = useState<number>(0);
-  const [customer, setCustomer] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-  });
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [customer, setCustomer] = useState<{ firstName: string; lastName: string; phone: string } | null>(null);
+  const [isGuest, setIsGuest] = useState(false);
 
+  // const totalAmount = selectedServices.reduce(
+  //   (sum, service) => sum + (servicesPricing[service] || 0),
+  //   0
+  // );
+
+  // useEffect(() => {
+  //   const queryParams = queryString.parse(location.search);
+  //   if (queryParams.services) {
+  //     const selected = (queryParams.services as string).split(",");
+  //     setSelectedServices(selected);
+  //     const totalPrice = selected.reduce(
+  //       (sum, service) => sum + servicesPricing[service],
+  //       0
+  //     );
+  //     setTotal(totalPrice);
+  //   }
+
+  //   //GET THE NAME OF THE CUSTOMER FROM DB
+  //   // axios.get(`/api/customer/${"customerId"}`).then((response) => {
+  //   //   const { givenName, familyName, phoneNumber } = response.data;
+  //   //   setCustomer({
+  //   //     firstName: givenName,
+  //   //     lastName: familyName,
+  //   //     phone: phoneNumber || "",
+  //   //   });
+  //   // });
+  // }, [location.search]);
+
+  useEffect(() => {
+
+    const fetchCustomerData = async () => {
+      try {
+        const response = await axios.get(`/api/customer`);
+        setCustomer(response.data);
+      } catch (error) {
+        console.error("No customer data found. Proceeding as guest.");
+        setIsGuest(true);
+      }
+    };
+
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get("/api/services");
+        const pricing = response.data.reduce((acc: any, service: any) => {
+          acc[service.name] = service.price;
+          return acc;
+        }, {});
+        setServicesPricing(pricing); // Sets dynamic service pricing
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+    fetchCustomerData();
+    fetchServices();
+  }, []);
+
+  // Handle URL query parameters for selected services and calculate total
   useEffect(() => {
     const queryParams = queryString.parse(location.search);
     if (queryParams.services) {
       const selected = (queryParams.services as string).split(",");
       setSelectedServices(selected);
-      const totalPrice = selected.reduce(
-        (sum, service) => sum + servicesPricing[service],
+
+      // Calculate total based on selected services
+      const total = selected.reduce(
+        (sum, service) => sum + (servicesPricing[service] || 0),
         0
       );
-      setTotal(totalPrice);
+      setTotalAmount(total); // Set total amount
     }
+  }, [location.search, servicesPricing]);
 
-    //GET THE NAME OF THE CUSTOMER FROM DB
-    // axios.get(`/api/customer/${"customerId"}`).then((response) => {
-    //   const { givenName, familyName, phoneNumber } = response.data;
-    //   setCustomer({
-    //     firstName: givenName,
-    //     lastName: familyName,
-    //     phone: phoneNumber || "",
-    //   });
-    // });
-  }, [location.search]);
 
   const handleServiceSelect = (service: string) => {
     if (selectedServices.includes(service)) {
       const updatedServices = selectedServices.filter((s) => s !== service);
       setSelectedServices(updatedServices);
-      setTotal(
+      setTotalAmount(
         updatedServices.reduce(
           (sum, service) => sum + servicesPricing[service],
           0
@@ -70,7 +118,7 @@ const Reservation: React.FC = () => {
     } else {
       const updatedServices = [...selectedServices, service];
       setSelectedServices(updatedServices);
-      setTotal(
+      setTotalAmount(
         updatedServices.reduce(
           (sum, service) => sum + servicesPricing[service],
           0
@@ -82,13 +130,17 @@ const Reservation: React.FC = () => {
   const handleConfirmReservation = () => {
     // Pass selected services and total amount to the Payments page
     const selectedServicesQuery = selectedServices.join(",");
-    navigate(`/payments?services=${selectedServicesQuery}&total=${total}`);
+    navigate(`/payments?services=${selectedServicesQuery}&total=${totalAmount}`);
   };
 
   return (
     <Box className="reservation-container">
      <Typography variant="h5" gutterBottom>
-        Dear {customer.firstName} {customer.lastName},
+        {customer ? (
+          `Dear ${customer.firstName} ${customer.lastName},`
+        ) : (
+          "Guest Reservation"
+        )}
       </Typography>
       <Typography variant="body1" gutterBottom>
         Here’s a summary of your selected services:
@@ -99,12 +151,12 @@ const Reservation: React.FC = () => {
           <ListItem key={index}>
             <ListItemText
               primary={service}
-              secondary={`Price: $${servicesPricing[service].toFixed(2)}`}
+              secondary={`Price: $${servicesPricing[service]?.toFixed(2)}`}
             />
           </ListItem>
         ))}
       </List>
-      <Typography variant="h6">Total: ${total.toFixed(2)}</Typography>
+      <Typography variant="h6">Total: ${totalAmount.toFixed(2)}</Typography>
 
       {/* Services Component with preselected services */}
       <Services
