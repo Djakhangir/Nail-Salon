@@ -11,6 +11,7 @@ import {
 import Services from "../Services/Services";
 import queryString from "query-string";
 import axios from "axios";
+import LoadingIndicator from "../../Util/features/loadingIndicator";
 // import queryString from "query-string";
 // import { payments } from "@square/web-sdk";
 
@@ -31,6 +32,8 @@ const Reservation: React.FC = () => {
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [customer, setCustomer] = useState<{ firstName: string; lastName: string; phone: string } | null>(null);
   const [isGuest, setIsGuest] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null); 
 
   // const totalAmount = selectedServices.reduce(
   //   (sum, service) => sum + (servicesPricing[service] || 0),
@@ -79,9 +82,11 @@ const Reservation: React.FC = () => {
           acc[service.name] = service.price;
           return acc;
         }, {});
-        setServicesPricing(pricing); // Sets dynamic service pricing
+        setServicesPricing(pricing);
       } catch (error) {
         console.error("Error fetching services:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchCustomerData();
@@ -104,6 +109,10 @@ const Reservation: React.FC = () => {
     }
   }, [location.search, servicesPricing]);
 
+
+  if (loading) {
+    return <LoadingIndicator message="Loading your reservation details..." />;
+  }
 
   const handleServiceSelect = (service: string) => {
     if (selectedServices.includes(service)) {
